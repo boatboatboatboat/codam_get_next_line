@@ -6,7 +6,7 @@
 /*   By: dpattij <dpattij@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/11/01 20:34:49 by dpattij        #+#    #+#                */
-/*   Updated: 2019/11/22 23:17:34 by dpattij       ########   odam.nl         */
+/*   Updated: 2019/11/22 23:56:53 by dpattij       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static int			get_fd_buffer(t_vecstr *buffers, int fd, t_pairedstr **out)
 	t_pairedstr		*cur;
 
 	idx = 0;
-	cur = buffers->raw.v[0];
+	cur = idx < buffers->length ? buffers->raw.v[0] : NULL;
 	while (idx < buffers->length && cur->key != fd)
 	{
 		cur = buffers->raw.v[idx];
@@ -35,7 +35,7 @@ static int			get_fd_buffer(t_vecstr *buffers, int fd, t_pairedstr **out)
 		cur->head = 0;
 		idx = -1;
 	}
-	if (cur->string == NULL || vecstr_push(buffers, cur) != 0)
+	if (idx == -1 && (cur->string == NULL || vecstr_push(buffers, cur) != 0))
 		return (-(vecstr_drop(cur->string, 1, 1) && vecstr_drop(cur, 1, 1)));
 	*out = cur;
 	return (idx == -1ULL ? STATUS_BUFFER_IS_NEW : STATUS_BUFFER_IS_OLD);

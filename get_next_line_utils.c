@@ -6,7 +6,7 @@
 /*   By: dpattij <dpattij@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/11/01 20:14:23 by dpattij        #+#    #+#                */
-/*   Updated: 2019/11/05 23:16:36 by dpattij       ########   odam.nl         */
+/*   Updated: 2019/11/23 00:16:02 by dpattij       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ int				vecstr_resize(t_vecstr *self, t_size new_size)
 	void		*new_raw;
 	t_size		idx;
 
+	if (new_size < VECSTR_DEFAULT_CAPACITY)
+		new_size = VECSTR_DEFAULT_CAPACITY;
 	new_raw = malloc(new_size *
 		(self->tag == TaggedString ? sizeof(char) : sizeof(void *)));
 	if (new_raw == NULL)
