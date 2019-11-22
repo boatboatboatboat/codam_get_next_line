@@ -6,19 +6,19 @@
 /*   By: dpattij <dpattij@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/11/01 20:14:23 by dpattij        #+#    #+#                */
-/*   Updated: 2019/11/03 18:59:52 by dpattij       ########   odam.nl         */
+/*   Updated: 2019/11/05 23:16:36 by dpattij       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-t_vecstr		*vecstr_new(enum e_vecstr_tag tag)
+int				vecstr_new(t_vecstr **target, enum e_vecstr_tag tag)
 {
 	t_vecstr	*new_vecstr;
 
 	new_vecstr = malloc(sizeof(t_vecstr));
 	if (new_vecstr == NULL)
-		return (NULL);
+		return (STATUS_ERROR);
 	new_vecstr->capacity = VECSTR_DEFAULT_CAPACITY;
 	new_vecstr->length = 0;
 	new_vecstr->tag = tag;
@@ -27,8 +27,12 @@ t_vecstr		*vecstr_new(enum e_vecstr_tag tag)
 	else if (tag == TaggedVector)
 		new_vecstr->raw.v = malloc(VECSTR_DEFAULT_CAPACITY * sizeof(void *));
 	if (new_vecstr->raw.v == NULL)
-		return (NULL);
-	return (new_vecstr);
+	{
+		free(new_vecstr);
+		return (STATUS_ERROR);
+	}
+	*target = new_vecstr;
+	return (STATUS_SUCCESS);
 }
 
 int				vecstr_resize(t_vecstr *self, t_size new_size)
@@ -55,6 +59,28 @@ int				vecstr_resize(t_vecstr *self, t_size new_size)
 	return (STATUS_SUCCESS);
 }
 
+int				vecstr_drop(void *any, int passthrough, int just_free)
+{
+	t_size		idx;
+	t_vecstr	*self;
+
+	if (just_free)
+		free(any);
+	if (just_free || any == NULL)
+		return (passthrough);
+	self = any;
+	idx = 0;
+	if (self->tag == TaggedVector)
+		while (idx < self->length)
+		{
+			free(self->raw.v[idx]);
+			idx += 1;
+		}
+	free(self->raw.v);
+	free(self);
+	return (passthrough);
+}
+
 int				vecstr_push(t_vecstr *self, void *value)
 {
 	if (self->length >= self->capacity)
@@ -68,11 +94,9 @@ int				vecstr_push(t_vecstr *self, void *value)
 	return (STATUS_SUCCESS);
 }
 
-int				vecstr_indirect_new(t_vecstr **buffer)
+int				vecstr_maybe_new(t_vecstr **target, enum e_vecstr_tag tag)
 {
-	if (*buffer == NULL)
-		*buffer = vecstr_new(TaggedVector);
-	if (*buffer == NULL)
-		return (STATUS_ERROR);
+	if (*target == NULL)
+		return (vecstr_new(target, tag));
 	return (STATUS_SUCCESS);
 }

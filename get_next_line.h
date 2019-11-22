@@ -6,7 +6,7 @@
 /*   By: dpattij <dpattij@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/11/01 20:15:45 by dpattij        #+#    #+#                */
-/*   Updated: 2019/11/03 02:19:20 by dpattij       ########   odam.nl         */
+/*   Updated: 2019/11/05 23:15:19 by dpattij       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,15 @@ typedef struct			s_pairedstr
 	int					key;
 	char				*string;
 	t_size				head;
+	t_size				buf_used;
 }						t_pairedstr;
 
-t_vecstr				*vecstr_new(enum e_vecstr_tag tag);
+int						vecstr_new(t_vecstr **target, enum e_vecstr_tag tag);
 int						vecstr_resize(t_vecstr *self, t_size new_size);
 int						vecstr_push(t_vecstr *self, void *value);
-int						vecstr_indirect_new(t_vecstr **buffer);
 int						get_next_line(int fd, char **line);
+int						vecstr_drop(void *any, int passthrough, int just_free);
+int						vecstr_maybe_new(
+	t_vecstr **target, enum e_vecstr_tag tag);
 
 #endif
