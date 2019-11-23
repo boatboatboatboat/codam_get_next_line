@@ -6,7 +6,7 @@
 /*   By: dpattij <dpattij@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/11/01 20:34:49 by dpattij        #+#    #+#                */
-/*   Updated: 2019/11/23 17:57:30 by dpattij       ########   odam.nl         */
+/*   Updated: 2019/11/23 19:16:44 by dpattij       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,9 +136,9 @@ int					get_next_line(int fd, char **line)
 			: vecstr_drop(c_buf, -1, 1) + vecstr_drop(c_line, 0, 0));
 	}
 	result = read_until_newline(fd, c_buf, c_line, line);
-	if (result == STATUS_EOF_REACHED)
-		return (refit_buffer(buffers, c_buf));
-	else if (result == STATUS_ERROR)
-		return (vecstr_drop(c_buf, -1, 1) + vecstr_drop(c_line, 0, 0));
+	if (result == STATUS_EOF_REACHED || result == STATUS_ERROR)
+		refit_buffer(buffers, c_buf);
+	if (result == STATUS_ERROR)
+		vecstr_drop(c_line, 0, 0);
 	return (result);
 }
